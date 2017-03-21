@@ -1,0 +1,15 @@
+* Spacemacs Configuration
+** What is it good for?
+Personal configuration of a new Spacemacs user for mainly python and occasional C/C++ development with commonly used
+programs/tools such as git, docker and multi-term shell.
+** How to install it?
+- Backup your spacemacs configuration
+#+BEGIN_SRC shell
+cd ~
+mv .spacemacs.d .spacemacs.d.bak
+mv .spacemacs .spacemacs.bak
+#+END_SRC
+- Clone the repository
+#+BEGIN_SRC shell
+git clone https://github.com/shrirang-bhate/dotspacemacs
+#+END_SRC
