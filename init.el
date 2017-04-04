@@ -2,6 +2,9 @@
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
 
+;; Load my other scripts
+(add-to-list 'load-path "~/.spacemacs.d/custom")
+
 (defun dotspacemacs/layers ()
   "Configuration Layers declaration.
 You should not put any user code in this function besides modifying the variable
@@ -45,21 +48,26 @@ values."
      git
      markdown
      org
-     mu4e
-     xkcd
+     (org :variables org-enable-github-support t)
      shell
-      (shell :variables
+     (shell :variables
              shell-default-shell 'multi-term
              shell-default-height 30
              shell-default-position 'bottom
       )
-     docker
      spell-checking
      syntax-checking
-     search-engine
      version-control
      c-c++
      python
+     (python :variables python-enable-yapf-format-on-save t)
+     search-engine
+     docker
+     mu4e
+     (mu4e :variables
+           mu4e-account-alist t
+           mu4e-installation-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
+     xkcd
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -257,8 +265,18 @@ values."
    ;; scrolling overrides the default behavior of Emacs which recenters point
    ;; when it reaches the top or bottom of the screen. (default t)
    dotspacemacs-smooth-scrolling t
-   ;; If non nil line numbers are turned on in all `prog-mode' and `text-mode'
-   ;; derivatives. If set to `relative', also turns on relative line numbers.
+   ;; Control line numbers activation.
+   ;; If set to `t' or `relative' line numbers are turned on in all `prog-mode' and
+   ;; `text-mode' derivatives. If set to `relative', line numbers are relative.
+   ;; This variable can also be set to a property list for finer control:
+   ;; '(:relative nil
+   ;;   :disabled-for-modes dired-mode
+   ;;                       doc-view-mode
+   ;;                       markdown-mode
+   ;;                       org-mode
+   ;;                       pdf-view-mode
+   ;;                       text-mode
+   ;;   :size-limit-kb 1000)
    ;; (default nil)
    dotspacemacs-line-numbers 'relative
    ;; Code folding method. Possible values are `evil' and `origami'.
@@ -304,6 +322,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
   ;; Enable magit SVN plugin
   (setq-default git-enable-magit-svn-plugin t)
+
+  ;; Use gpg for easy-pg
+  (setq epg-gpg-program "/usr/local/bin/gpg")
   )
 
 (defun dotspacemacs/user-config ()
@@ -323,16 +344,9 @@ you should place your code here."
   ;; Projectile native indexing
   (setq projectile-indexing-method 'alien)
 
-  ;; Python: Automatic buffer formatting on save
-  (setq-default dotspacemacs-configuration-layers '(
-                                                    (python :variables python-enable-yapf-format-on-save t)
-                                                    (mu4e :variables mu4e-installation-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
-                                                    (org :variables org-enable-github-support t)))
-
   ;; Add project and dependencies to Emacs PYTHONPATH
   ;;(setq python-shell-extra-pythonpaths nil)
-  ;;(add-to-list 'python-shell-extra-pythonpaths "~/dev/axess_trunk/src/axess/")
-  ;;(add-to-list 'python-shell-extra-pythonpaths "~/dev/axess_trunk/src/axess/eggs")
+  ;;(add-to-list 'python-shell-extra-pythonpaths "")
 
   ;; Add company-anaconda to allowed company-mode backends list
   (eval-after-load "company"
@@ -341,6 +355,9 @@ you should place your code here."
   ;; Enable anaconda-mode in buffers you want to use company-anaconda
   (add-hook 'python-mode-hook 'anaconda-mode)
   (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
+
+  ;; Setup email(user defined configuration)
+  (require 'init-mail)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -355,7 +372,7 @@ you should place your code here."
  '(markdown-command "/usr/local/bin/markdown")
  '(package-selected-packages
    (quote
-    (ox-gfm xkcd typit mmt pacmacs dash-functional 2048-game mu4e-maildirs-extension mu4e-alert ht web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter engine-mode diff-hl disaster company-c-headers cmake-mode clang-format dockerfile-mode docker json-mode tablist docker-tramp json-snatcher json-reformat wgrep smex ivy-hydra flyspell-correct-ivy counsel-projectile counsel swiper ivy xterm-color shell-pop org-projectile org-present org-pomodoro alert log4e gntp org-download multi-term htmlize gnuplot eshell-z eshell-prompt-extras esh-help yapfify smeargle pyvenv pytest pyenv-mode py-isort pip-requirements orgit org mmm-mode markdown-toc markdown-mode magit-gitflow live-py-mode hy-mode helm-pydoc helm-gitignore helm-company helm-c-yasnippet gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor cython-mode company-mode company-statistics company-anaconda company auto-yasnippet yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide ido-vertical-mode hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async quelpa package-build spacemacs-theme)))
+    (winum fuzzy ox-reveal ox-gfm xkcd typit mmt pacmacs dash-functional 2048-game mu4e-maildirs-extension mu4e-alert ht web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter engine-mode diff-hl disaster company-c-headers cmake-mode clang-format dockerfile-mode docker json-mode tablist docker-tramp json-snatcher json-reformat wgrep smex ivy-hydra flyspell-correct-ivy counsel-projectile counsel swiper ivy xterm-color shell-pop org-projectile org-present org-pomodoro alert log4e gntp org-download multi-term htmlize gnuplot eshell-z eshell-prompt-extras esh-help yapfify smeargle pyvenv pytest pyenv-mode py-isort pip-requirements orgit org mmm-mode markdown-toc markdown-mode magit-gitflow live-py-mode hy-mode helm-pydoc helm-gitignore helm-company helm-c-yasnippet gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor cython-mode company-mode company-statistics company-anaconda company auto-yasnippet yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide ido-vertical-mode hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async quelpa package-build spacemacs-theme)))
  '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
