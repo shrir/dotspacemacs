@@ -11,5 +11,5 @@ mv .spacemacs .spacemacs.bak
 #+END_SRC
 - Clone the repository
 #+BEGIN_SRC shell
-git clone https://github.com/shrirang-bhate/dotspacemacs ~/.spacemacs.d
+git clone https://github.com/shrir/dotspacemacs ~/.spacemacs.d
 #+END_SRC
