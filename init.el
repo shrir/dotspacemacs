@@ -3,7 +3,7 @@
 ;; It must be stored in your home directory.
 
 ;; Load my other scripts
-(add-to-list 'load-path "~/.spacemacs.d/custom")
+(add-to-list 'load-path "~/.spacemacs.d/mail")
 
 (defun dotspacemacs/layers ()
   "Configuration Layers declaration.
@@ -34,6 +34,10 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     csv
+     yaml
+     javascript
+     sql
      html
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
@@ -53,8 +57,7 @@ values."
      (shell :variables
              shell-default-shell 'multi-term
              shell-default-height 30
-             shell-default-position 'bottom
-      )
+             shell-default-position 'bottom)
      spell-checking
      syntax-checking
      version-control
@@ -68,6 +71,8 @@ values."
            mu4e-account-alist t
            mu4e-installation-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
      xkcd
+     games
+     spotify
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -324,7 +329,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq-default git-enable-magit-svn-plugin t)
 
   ;; Use gpg for easy-pg
+  (require 'epa-file)
+  (epa-file-enable)
   (setq epg-gpg-program "/usr/local/bin/gpg")
+  ;;(setenv "GPG_AGENT_INFO" "~/.gnupg/S.gpg-agent")
   )
 
 (defun dotspacemacs/user-config ()
@@ -356,8 +364,81 @@ you should place your code here."
   (add-hook 'python-mode-hook 'anaconda-mode)
   (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
 
+  ;; Enable mouse
+  ;;(xterm-mouse-mode -1)
+
   ;; Setup email(user defined configuration)
   (require 'init-mail)
+
+  ;; Customize search engines
+  (setq search-engine-alist (remove* 'amazon search-engine-alist :test 'equal :key 'car))
+  (setq search-engine-alist (remove* 'bing search-engine-alist :test 'equal :key 'car))
+  (setq search-engine-alist (remove* 'google search-engine-alist :test 'equal :key 'car))
+  (setq search-engine-alist (remove* 'google-images search-engine-alist :test 'equal :key 'car))
+  (setq search-engine-alist (remove* 'google-maps search-engine-alist :test 'equal :key 'car))
+  (setq search-engine-alist (remove* 'twitter search-engine-alist :test 'equal :key 'car))
+  (setq search-engine-alist (remove* 'project-gutenberg search-engine-alist :test 'equal :key 'car))
+  (setq search-engine-alist (remove* 'youtube search-engine-alist :test 'equal :key 'car))
+  (setq search-engine-alist (remove* 'spacemacs-issues search-engine-alist :test 'equal :key 'car))
+  (setq search-engine-alist (remove* 'spacemacs-pullrequests search-engine-alist :test 'equal :key 'car))
+  (setq search-engine-alist (remove* 'wolfram-alpha search-engine-alist :test 'equal :key 'car))
+
+  ;; Configure shell
+  (setq explicit-shell-file-name "/bin/bash")
+  (setq shell-file-name "/bin/bash")
+  (setenv "SHELL" shell-file-name)
+
+  ;;Enable evil-surround
+  (use-package evil-surround
+    :ensure t
+    :config
+    (global-evil-surround-mode 1))
+
+  ;;Configure golden ratio
+  (setq golden-ratio-auto-scale t)
+  (setq golden-ratio-adjust-factor .5
+        golden-ratio-wide-adjust-factor .5)
+
+  ;; Set Org-mode agenda files
+  (setq org-agenda-files '("~/Documents/Personal/todo.org"))
+
+  ;; Set TODO keywords
+  (setq org-todo-keywords '((type "TODO" "WAITING" "|" "DONE")))
+
+  ;; Org-mode timestamp format
+  (setq org-time-stamp-formats
+        '("<%Y-%m-%d %a>" . "<%Y-%m-%d %a %H:%M>"))
+
+  ;; tell org-mode where to find the plantuml JAR file (specify the JAR file)
+  (setq org-plantuml-jar-path (expand-file-name "~/plantuml.jar"))
+
+  ;; use plantuml as org-babel language
+  (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
+
+  ;; helper function
+  (defun my-org-confirm-babel-evaluate (lang body)
+    "Do not ask for confirmation to evaluate code for specified languages."
+    (member lang '("plantuml")))
+
+  ;; trust certain code as being safe
+  (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
+
+  ;; automatically show the resulting image
+  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images)
+
+  ;; natural title bar
+  (add-to-list 'default-frame-alist
+    '(ns-transparent-titlebar . t))
+
+  (add-to-list 'default-frame-alist
+    '(ns-appearance . dark))
+
+  ;; Workaround for #10196
+  (with-eval-after-load 'helm
+    (setq helm-display-function 'helm-default-display-buffer))
+
+  ;; Default is Python3
+  (setq flycheck-python-pycompile-executable "python3")
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -372,7 +453,8 @@ you should place your code here."
  '(markdown-command "/usr/local/bin/markdown")
  '(package-selected-packages
    (quote
-    (winum fuzzy ox-reveal ox-gfm xkcd typit mmt pacmacs dash-functional 2048-game mu4e-maildirs-extension mu4e-alert ht web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter engine-mode diff-hl disaster company-c-headers cmake-mode clang-format dockerfile-mode docker json-mode tablist docker-tramp json-snatcher json-reformat wgrep smex ivy-hydra flyspell-correct-ivy counsel-projectile counsel swiper ivy xterm-color shell-pop org-projectile org-present org-pomodoro alert log4e gntp org-download multi-term htmlize gnuplot eshell-z eshell-prompt-extras esh-help yapfify smeargle pyvenv pytest pyenv-mode py-isort pip-requirements orgit org mmm-mode markdown-toc markdown-mode magit-gitflow live-py-mode hy-mode helm-pydoc helm-gitignore helm-company helm-c-yasnippet gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor cython-mode company-mode company-statistics company-anaconda company auto-yasnippet yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide ido-vertical-mode hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async quelpa package-build spacemacs-theme)))
+    (ox-twbs csv-mode yaml-mode sudoku org-mime helm-spotify-plus web-beautify livid-mode skewer-mode simple-httpd js2-refactor multiple-cursors js2-mode js-doc company-tern tern coffee-mode org-category-capture ghub let-alist sql-indent spotify helm-spotify multi winum fuzzy ox-reveal ox-gfm xkcd typit mmt pacmacs dash-functional 2048-game mu4e-maildirs-extension mu4e-alert ht web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter engine-mode diff-hl disaster company-c-headers cmake-mode clang-format dockerfile-mode docker json-mode tablist docker-tramp json-snatcher json-reformat wgrep smex ivy-hydra flyspell-correct-ivy counsel-projectile counsel swiper ivy xterm-color shell-pop org-projectile org-present org-pomodoro alert log4e gntp org-download multi-term htmlize gnuplot eshell-z eshell-prompt-extras esh-help yapfify smeargle pyvenv pytest pyenv-mode py-isort pip-requirements orgit org mmm-mode markdown-toc markdown-mode magit-gitflow live-py-mode hy-mode helm-pydoc helm-gitignore helm-company helm-c-yasnippet gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor cython-mode company-mode company-statistics company-anaconda company auto-yasnippet yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide ido-vertical-mode hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async quelpa package-build spacemacs-theme)))
+ '(paradox-github-token t)
  '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
