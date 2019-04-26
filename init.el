@@ -412,6 +412,10 @@ you should place your code here."
   ;; tell org-mode where to find the plantuml JAR file (specify the JAR file)
   (setq org-plantuml-jar-path (expand-file-name "~/plantuml.jar"))
 
+  ;; Markdown export
+  (eval-after-load "org"
+    '(require 'ox-md nil t))
+
   ;; use plantuml as org-babel language
   (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
 
