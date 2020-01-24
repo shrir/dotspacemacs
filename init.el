@@ -456,13 +456,18 @@ you should place your code here."
   (add-to-list 'default-frame-alist
     '(ns-appearance . dark))
 
+  ;; Helm disable auto resize
+  (setq-default dotspacemacs-configuration-layers '(
+    (helm :variables helm-enable-auto-resize t)))
+  )
+  (setq helm-split-window-inside-p t)
+
   ;; Workaround for #10196
   (with-eval-after-load 'helm
     (setq helm-display-function 'helm-default-display-buffer))
 
   ;; Default is Python3
-  (setq flycheck-python-pycompile-executable "python3")
-  )
+  ;;(setq flycheck-python-pycompile-executable "python3")
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
