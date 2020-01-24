@@ -438,6 +438,14 @@ you should place your code here."
   (require 'ox-reveal)
   (setq org-reveal-root "")
 
+  ;; Clang support
+  (setq-default dotspacemacs-configuration-layers
+                '((c-c++ :variables c-c++-enable-clang-support t)))
+
+  ;; Open header files in C++ mode
+  (setq-default dotspacemacs-configuration-layers
+                '((c-c++ :variables c-c++-default-mode-for-headers 'c++-mode)))
+
   ;; automatically show the resulting image
   (add-hook 'org-babel-after-execute-hook 'org-display-inline-images)
 
