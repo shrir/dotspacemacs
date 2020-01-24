@@ -34,6 +34,8 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     ansible
+     nginx
      csv
      yaml
      javascript
@@ -47,12 +49,17 @@ values."
      helm
      ;;ivy
      auto-completion
+     semantic
+     cscope
+
      ;; better-defaults
      emacs-lisp
      git
      markdown
      org
-     (org :variables org-enable-github-support t)
+     (org :variables
+          org-enable-github-support t
+          org-enable-reveal-js-support t)
      shell
      (shell :variables
              shell-default-shell 'multi-term
