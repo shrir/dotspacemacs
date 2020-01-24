@@ -434,6 +434,10 @@ you should place your code here."
   ;; trust certain code as being safe
   (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
 
+  ;; Reveal.js configuration
+  (require 'ox-reveal)
+  (setq org-reveal-root "")
+
   ;; automatically show the resulting image
   (add-hook 'org-babel-after-execute-hook 'org-display-inline-images)
 
